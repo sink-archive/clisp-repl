@@ -1,3 +1,4 @@
+import { rainbowify } from "./rainbowify";
 import { initStdin } from "./stdin";
 import { PromptOutput } from "./stdout";
 
@@ -6,14 +7,13 @@ import { PromptOutput } from "./stdout";
 
   const preProcess = (c: string) => c === "\r" ? "\n" : c;
   const postProcess = (str: string) => {
-    // todo: bracket highlighting
     const lines = str.split("\n");
     
     lines[0] = `> ${lines[0]}`;
     for (let i = 1; i < lines.length; i++)
       lines[i] = `; ${lines[i]}`;
     
-    return lines.join("\n");
+    return rainbowify(lines.join("\n"));
   }
 
   const pOut = new PromptOutput(preProcess, postProcess);

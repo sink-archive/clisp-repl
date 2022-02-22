@@ -20,9 +20,20 @@ const colToCode = (col: number, bright: boolean, bg: boolean) =>
 
 export const COLOR = (col: number, bright = false, bg = false) =>
   makeSgr([colToCode(col, bright, bg)]);
-export const COLORS = (
+export const FGBG_COLOR = (
   col1: number,
   col2: number,
   bright1 = false,
   bright2 = false
 ) => makeSgr([colToCode(col1, bright1, false), colToCode(col2, bright2, true)]);
+
+export const COLORS = {
+  black: 0,
+  red: 1,
+  green: 2,
+  yellow: 3,
+  blue: 4,
+  magenta: 5,
+  cyan: 6,
+  white: 7,
+}
