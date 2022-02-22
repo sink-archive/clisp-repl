@@ -36,7 +36,7 @@ function reset() {
   stringMode = false;
 }
 
-export function rainbowify(str: string, colouredText = false) {
+export function rainbowify(str: string, colouredText = true) {
   let working = "";
 
   const getLastRainbowCol = () =>
