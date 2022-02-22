@@ -1,0 +1,29 @@
+lockfileVersion: 5.3
+
+specifiers:
+  '@types/node': ^17.0.19
+  cumlisp: ^1.2.0
+  typescript: ^4.5.5
+
+dependencies:
+  cumlisp: 1.2.0
+
+devDependencies:
+  '@types/node': 17.0.19
+  typescript: 4.5.5
+
+packages:
+
+  /@types/node/17.0.19:
+    resolution: {integrity: sha512-PfeQhvcMR4cPFVuYfBN4ifG7p9c+Dlh3yUZR6k+5yQK7wX3gDgVxBly4/WkBRs9x4dmcy1TVl08SY67wwtEvmA==}
+    dev: true
+
+  /cumlisp/1.2.0:
+    resolution: {integrity: sha512-B4ug+kGBPDLZq7KOFuijnWpYh1ZB5IDMYC8RXizxt7NMrH7Mu6QmA2WMU3GCoIMjQNw/WbZxOg0AqBpdhI2Cug==}
+    dev: false
+
+  /typescript/4.5.5:
+    resolution: {integrity: sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: true
