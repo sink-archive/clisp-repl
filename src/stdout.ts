@@ -114,7 +114,7 @@ export class PromptOutput {
 
     this.#wipeLast();
 
-    stdout.write(toWrite) /*  + CURBACK(this.#seekBack[1]) */;
+    stdout.write(toWrite) /* + CURBACK(this.#buffer.length - this.#seek[1]) */;
     this.#lastDisplayLength = toWrite.split("\n").map((line) => line.length);
   }
 }
