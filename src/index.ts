@@ -4,6 +4,7 @@ import { Prompt } from "./prompt";
 import isLisp from "./isLisp";
 import { VM, libBasic, run } from "cumlisp";
 import installStools from "clisp-stools";
+import { CLEAR_LINE, TO_COL } from "./ansi";
 
 const promptForLisp = async () => {
   const preProcess = (c: string) => (c === "\r" ? "\n" : c);
@@ -41,6 +42,7 @@ const promptForLisp = async () => {
 
   while (true) {
     const lisp = await promptForLisp();
-    console.log(await run(lisp, vm));
+    const res = await run(`%(${lisp})`, vm);
+    console.log(TO_COL(1) + CLEAR_LINE + res);
   }
 })();
