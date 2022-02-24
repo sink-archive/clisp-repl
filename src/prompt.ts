@@ -16,28 +16,28 @@ export class Prompt {
     preProcess?: (c: string) => string,
     postProcess?: (str: string) => string
   ) {
-    this.preProcess = preProcess;
-    this.postProcess = postProcess;
+    this.PreProcess = preProcess;
+    this.PostProcess = postProcess;
     this.#display();
   }
 
   #buffer = "";
-  #lastDisplayLength: number[] = [];
+  #lastDisplayLengths: number[] = [];
   #escapeMode = 0;
   // cursor position - in [y, x] just to annoy people :)
   #seek: [number, number] = [0, 0];
   #lastDisplaySeek: [number, number] = [...this.#seek];
 
-  get bufferRaw() {
+  get BufferRaw() {
     return this.#buffer;
   }
-  get bufferProcessed() {
-    return this.postProcess?.(this.#buffer);
+  get BufferProcessed() {
+    return this.PostProcess?.(this.#buffer);
   }
 
-  preProcess;
+  PreProcess;
 
-  postProcess;
+  PostProcess;
 
   get #rawSeek() {
     const lineLengths = this.#buffer.split("\n").map((line) => line.length);
@@ -53,6 +53,13 @@ export class Prompt {
     const before = this.#buffer.slice(0, i);
     const after = this.#buffer.slice(i);
     this.#buffer = before + c + after;
+  }
+
+  #spliceOutOfBuffer() {
+    const i = this.#rawSeek;
+    const before = this.#buffer.slice(0, i - 1);
+    const after = this.#buffer.slice(i);
+    this.#buffer = before + after;
   }
 
   #goback() {
@@ -73,11 +80,13 @@ export class Prompt {
     }
   }
 
-  writeChar(c: string) {
+  PutChar(c: string) {
     if (c.length !== 1) throw new Error("c must be a single character");
 
-    if (c === DELETE_CHAR) this.back(1);
-    else if (this.#escapeMode === 2) {
+    if (c === DELETE_CHAR) {
+      this.#spliceOutOfBuffer();
+      this.#goback();
+    } else if (this.#escapeMode === 2) {
       switch (c) {
         case "D":
           this.#goback();
@@ -90,18 +99,12 @@ export class Prompt {
     } else if (this.#escapeMode === 1) this.#escapeMode = c === "[" ? 2 : 0;
     else if (this.#escapeMode === 0 && c === "\u001b") this.#escapeMode = 1;
     else {
-      this.#spliceIntoBuffer(this.preProcess?.(c));
+      this.#spliceIntoBuffer(this.PreProcess?.(c));
 
       this.#gofwd();
     }
 
     this.#display();
-  }
-
-  back(n: number, display = true) {
-    this.#buffer = this.#buffer.slice(0, -n);
-    for (let i = 0; i < n; i++) this.#goback();
-    if (display) this.#display();
   }
 
   #wipeLast() {
@@ -110,13 +113,13 @@ export class Prompt {
     const movementToSeek = this.#getMovementToSeek(true);
     if (movementToSeek[0] > 0) toPrnt += CURDOWN(movementToSeek[0]);
 
-    this.#lastDisplayLength.forEach((len, i, a) => {
+    this.#lastDisplayLengths.forEach((len, i, a) => {
       toPrnt += TO_COL(1) + CLEAR_LINE;
       if (i !== a.length - 1) toPrnt += CURUP(1);
     });
 
     stdout.write(toPrnt);
-    this.#lastDisplayLength = [];
+    this.#lastDisplayLengths = [];
   }
 
   #getMovementToSeek(last = false) {
@@ -144,12 +147,12 @@ export class Prompt {
   }
 
   #display() {
-    const toWrite = this.bufferProcessed;
+    const toWrite = this.BufferProcessed;
 
     this.#wipeLast();
 
     stdout.write(toWrite + this.#moveCursorToSeek());
-    this.#lastDisplayLength = toWrite.split("\n").map((line) => line.length);
+    this.#lastDisplayLengths = toWrite.split("\n").map((line) => line.length);
     this.#lastDisplaySeek = [...this.#seek];
   }
 }

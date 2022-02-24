@@ -20,6 +20,6 @@ import { Prompt } from "./prompt";
 
   while (true) {
     const c = await readStdin();
-    pOut.writeChar(c);
+    pOut.PutChar(c);
   }
 })()
