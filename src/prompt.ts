@@ -22,7 +22,7 @@ export class Prompt {
   }
 
   #buffer = "";
-  #lastDisplayLengths: number[] = [];
+  #lastDisplayLengths: number[] = [0];
   #escapeMode = 0;
   // cursor position - in [y, x] just to annoy people :)
   #seek: [number, number] = [0, 0];
@@ -123,10 +123,12 @@ export class Prompt {
   }
 
   #getMovementToSeek(last = false) {
-    const splitBuffer = this.#buffer.split("\n");
+    const splitBuffer = last
+      ? this.#lastDisplayLengths
+      : this.#buffer.split("\n").map((l) => l.length);
     const currentPos = [
       splitBuffer.length - 1,
-      splitBuffer[splitBuffer.length - 1].length,
+      splitBuffer[splitBuffer.length - 1],
     ];
 
     const seek = last ? this.#lastDisplaySeek : this.#seek;
