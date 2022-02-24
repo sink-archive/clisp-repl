@@ -1,4 +1,4 @@
-import { COLOR, COLORS } from "./ansi";
+import { COLOR, COLORS } from "./ansi.js";
 
 let parenDepth = 0, stringMode = false, commentMode = false;
 

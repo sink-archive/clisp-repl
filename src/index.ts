@@ -1,10 +1,10 @@
-import { rainbowify } from "./rainbowify";
-import { initStdin } from "./stdin";
-import { Prompt } from "./prompt";
-import isLisp from "./isLisp";
+import { rainbowify } from "./rainbowify.js";
+import { initStdin } from "./stdin.js";
+import { Prompt } from "./prompt.js";
+import isLisp from "./isLisp.js";
 import { run } from "cumlisp";
-import { CLEAR_LINE, COLOR, COLORS, TO_COL } from "./ansi";
-import { makeVM } from "./api";
+import { CLEAR_LINE, COLOR, COLORS, TO_COL } from "./ansi.js";
+import { makeVM } from "./api.js";
 import { stdout } from "process";
 
 const promptForLisp = async () => {

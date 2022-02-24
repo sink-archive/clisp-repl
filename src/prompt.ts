@@ -7,7 +7,7 @@ import {
   CURUP,
   MOVE_CUR_HORIZ,
   TO_COL,
-} from "./ansi";
+} from "./ansi.js";
 
 const DELETE_CHAR = "\u007f";
 

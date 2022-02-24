@@ -3,10 +3,9 @@
   "compilerOptions": {
     "target": "ESNext",
     "noImplicitAny": true,
-    "declaration": true,
     "outDir": "dist",
-    "module": "CommonJS",
+    "noEmit": true,
     "moduleResolution": "node",
-    "sourceMap": true
+    "module": "ESNext"
   }
 }
