@@ -1,6 +1,6 @@
 import { rainbowify } from "./rainbowify";
 import { initStdin } from "./stdin";
-import { PromptOutput } from "./stdout";
+import { Prompt } from "./prompt";
 
 (async () => {
   const readStdin = initStdin();
@@ -16,7 +16,7 @@ import { PromptOutput } from "./stdout";
     return rainbowify(lines.join("\n"));
   }
 
-  const pOut = new PromptOutput(preProcess, postProcess);
+  const pOut = new Prompt(preProcess, postProcess);
 
   while (true) {
     const c = await readStdin();

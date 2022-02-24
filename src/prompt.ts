@@ -1,9 +1,16 @@
 import { stdout } from "process";
-import { CLEAR_LINE, CURBACK, CURFWD, CURUP, TO_COL } from "./ansi";
+import {
+  CLEAR_LINE,
+  CURBACK,
+  CURFWD,
+  CURUP,
+  MOVE_CUR_HORIZ,
+  TO_COL,
+} from "./ansi";
 
 const DELETE_CHAR = "\u007f";
 
-export class PromptOutput {
+export class Prompt {
   constructor(
     preProcess?: (c: string) => string,
     postProcess?: (str: string) => string
@@ -26,6 +33,8 @@ export class PromptOutput {
   preProcess;
 
   postProcess;
+
+  #escapeMode = 0;
 
   // cursor position - in [y, x] just to annoy people :)
   #seek = [0, 0];
@@ -58,7 +67,7 @@ export class PromptOutput {
   #gofwd() {
     const lineLengths = this.#buffer.split("\n").map((line) => line.length);
     if (this.#seek[1] < lineLengths[this.#seek[0]]) this.#seek[1]++;
-    else if (this.#seek[0] < lineLengths.length) {
+    else if (this.#seek[0] < lineLengths.length - 1) {
       this.#seek[0]++;
       this.#seek[1] = 0;
     }
@@ -66,24 +75,22 @@ export class PromptOutput {
 
   writeChar(c: string) {
     if (c.length !== 1) throw new Error("c must be a single character");
+
     if (c === DELETE_CHAR) this.back(1);
+    else if (this.#escapeMode === 2) {
+      switch (c) {
+        case "D":
+          this.#goback();
+          break;
+        case "C":
+          this.#gofwd();
+          break;
+      }
+      this.#escapeMode = 0;
+    } else if (this.#escapeMode === 1) this.#escapeMode = c === "[" ? 2 : 0;
+    else if (this.#escapeMode === 0 && c === "\u001b") this.#escapeMode = 1;
     else {
       this.#spliceIntoBuffer(this.preProcess?.(c));
-
-      const bufSlice = () => {
-        let i = this.#rawSeek;
-        return this.#buffer.slice(i - 2, i + 1);
-      }
-
-      while (bufSlice() === CURBACK(1)) {
-        this.back(3, false);
-        this.#goback();
-      }
-
-      while (bufSlice() === CURFWD(1)) {
-        this.back(3, false);
-        this.#gofwd();
-      }
 
       this.#gofwd();
     }
@@ -109,12 +116,33 @@ export class PromptOutput {
     this.#lastDisplayLength = [];
   }
 
+  #moveCursorToSeek() {
+    const splitBuffer = this.#buffer.split("\n");
+    const currentPos = [
+      splitBuffer.length - 1,
+      splitBuffer[splitBuffer.length - 1].length,
+    ];
+
+    const movement = [
+      currentPos[0] - this.#seek[0],
+      currentPos[1] - this.#seek[1],
+    ];
+
+    let buf = "";
+
+    if (movement[0] > 0) buf += CURUP(movement[0]);
+
+    buf += MOVE_CUR_HORIZ(-movement[1]);
+
+    return buf;
+  }
+
   #display() {
     const toWrite = this.bufferProcessed;
 
     this.#wipeLast();
 
-    stdout.write(toWrite) /* + CURBACK(this.#buffer.length - this.#seek[1]) */;
+    stdout.write(toWrite + this.#moveCursorToSeek());
     this.#lastDisplayLength = toWrite.split("\n").map((line) => line.length);
   }
 }

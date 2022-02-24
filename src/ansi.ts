@@ -13,6 +13,8 @@ export const CURFWD = makeNumFunc("C", 1);
 export const CURBACK = makeNumFunc("D", 1);
 export const TO_COL = makeNumFunc("G", 1);
 
+export const MOVE_CUR_HORIZ = (n: number) => n === 0 ? "" : n > 0 ? CURFWD(n) : CURBACK(-n);
+
 const makeSgr = (codes: number[]) => `${CSI}${codes.join(";")}m`;
 
 const colToCode = (col: number, bright: boolean, bg: boolean) =>
