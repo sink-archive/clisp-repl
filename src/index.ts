@@ -3,6 +3,7 @@ import { initStdin } from "./stdin";
 import { Prompt } from "./prompt";
 import isLisp from "./isLisp";
 import { VM, libBasic, run } from "cumlisp";
+import installStools from "clisp-stools";
 
 const promptForLisp = async () => {
   const preProcess = (c: string) => (c === "\r" ? "\n" : c);
@@ -36,6 +37,7 @@ const promptForLisp = async () => {
 (async () => {
   const vm = new VM(() => {});
   libBasic.installBasic(vm);
+  installStools(vm);
 
   while (true) {
     const lisp = await promptForLisp();
