@@ -14,10 +14,12 @@ const DELETE_CHAR = "\u007f";
 export class Prompt {
   constructor(
     preProcess?: (c: string) => string,
-    postProcess?: (str: string) => string
+    postProcess?: (str: string) => string,
+    preDispCallback?: (str: string) => void
   ) {
     this.PreProcess = preProcess;
     this.PostProcess = postProcess;
+    this.PreDisplay = preDispCallback;
     this.#display();
   }
 
@@ -36,8 +38,8 @@ export class Prompt {
   }
 
   PreProcess;
-
   PostProcess;
+  PreDisplay;
 
   get #rawSeek() {
     const lineLengths = this.#buffer.split("\n").map((line) => line.length);
@@ -149,6 +151,8 @@ export class Prompt {
   }
 
   #display() {
+    this.PreDisplay?.(this.#buffer);
+
     const toWrite = this.BufferProcessed;
 
     this.#wipeLast();

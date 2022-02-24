@@ -1,7 +1,6 @@
 import { COLOR, COLORS } from "./ansi";
 
-let parenDepth = 0;
-let stringMode = false;
+let parenDepth = 0, stringMode = false, commentMode = false;
 
 const stringColor = COLORS.yellow;
 const rainbowColours = [
@@ -42,7 +41,8 @@ export function rainbowify(str: string, colouredText = true) {
   const getLastRainbowCol = () =>
     parenDepth > 0 ? getRainbowColor() : COLORS.white;
 
-  for (const char of str) {
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i]
     updateState(char);
     if (stringMode) {
       if (char === '"') working += COLOR(stringColor);
@@ -50,6 +50,14 @@ export function rainbowify(str: string, colouredText = true) {
     } else if (char === '"')
       working +=
         char + COLOR(colouredText ? getLastRainbowCol() : COLORS.white);
+    else if (char === "|" && str[i - 1] === "#" && !commentMode) {
+      commentMode = true;
+      working = working.slice(0, -1) + COLOR(stringColor) + "#|";
+    }
+    else if (char === "#" && str[i - 1] === "|" && commentMode) {
+      commentMode = false;
+      working += char + COLOR(getLastRainbowCol());
+    }
     else {
       if (colouredText) {
         if (char === "(") {
