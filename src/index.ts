@@ -2,9 +2,8 @@ import { rainbowify } from "./rainbowify";
 import { initStdin } from "./stdin";
 import { Prompt } from "./prompt";
 import isLisp from "./isLisp";
-import { VM, libBasic, run } from "cumlisp";
-import installStools from "clisp-stools";
-import { CLEAR_LINE, TO_COL } from "./ansi";
+import { run } from "cumlisp";
+import { CLEAR_LINE, COLOR, COLORS, TO_COL } from "./ansi";
 import { makeVM } from "./api";
 import { stdout } from "process";
 
@@ -43,7 +42,11 @@ const promptForLisp = async () => {
   while (true) {
     const lisp = await promptForLisp();
     stdout.write(TO_COL(1) + CLEAR_LINE);
-    const res = await run(`%(${lisp})`, vm);
-    console.log(res);
+    try {
+      const res = await run(`%(${lisp})`, vm);
+      console.log(res);
+    } catch (e) {
+      console.error(COLOR(COLORS.red) + e + COLOR(COLORS.white));
+    }
   }
 })();
