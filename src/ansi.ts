@@ -9,6 +9,7 @@ const makeNumFunc =
 
 export const CLEAR_LINE = `${CSI}2K`;
 export const CURUP = makeNumFunc("A", 1);
+export const CURDOWN = makeNumFunc("B", 1);
 export const CURFWD = makeNumFunc("C", 1);
 export const CURBACK = makeNumFunc("D", 1);
 export const TO_COL = makeNumFunc("G", 1);

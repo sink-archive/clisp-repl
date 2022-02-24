@@ -2,6 +2,7 @@ import { stdout } from "process";
 import {
   CLEAR_LINE,
   CURBACK,
+  CURDOWN,
   CURFWD,
   CURUP,
   MOVE_CUR_HORIZ,
@@ -22,6 +23,10 @@ export class Prompt {
 
   #buffer = "";
   #lastDisplayLength: number[] = [];
+  #escapeMode = 0;
+  // cursor position - in [y, x] just to annoy people :)
+  #seek: [number, number] = [0, 0];
+  #lastDisplaySeek: [number, number] = [...this.#seek];
 
   get bufferRaw() {
     return this.#buffer;
@@ -33,11 +38,6 @@ export class Prompt {
   preProcess;
 
   postProcess;
-
-  #escapeMode = 0;
-
-  // cursor position - in [y, x] just to annoy people :)
-  #seek = [0, 0];
 
   get #rawSeek() {
     const lineLengths = this.#buffer.split("\n").map((line) => line.length);
@@ -107,6 +107,9 @@ export class Prompt {
   #wipeLast() {
     let toPrnt = "";
 
+    const movementToSeek = this.#getMovementToSeek(true);
+    if (movementToSeek[0] > 0) toPrnt += CURDOWN(movementToSeek[0]);
+
     this.#lastDisplayLength.forEach((len, i, a) => {
       toPrnt += TO_COL(1) + CLEAR_LINE;
       if (i !== a.length - 1) toPrnt += CURUP(1);
@@ -116,23 +119,26 @@ export class Prompt {
     this.#lastDisplayLength = [];
   }
 
-  #moveCursorToSeek() {
+  #getMovementToSeek(last = false) {
     const splitBuffer = this.#buffer.split("\n");
     const currentPos = [
       splitBuffer.length - 1,
       splitBuffer[splitBuffer.length - 1].length,
     ];
 
-    const movement = [
-      currentPos[0] - this.#seek[0],
-      currentPos[1] - this.#seek[1],
-    ];
+    const seek = last ? this.#lastDisplaySeek : this.#seek;
+
+    return [currentPos[0] - seek[0], seek[1] - currentPos[1]];
+  }
+
+  #moveCursorToSeek() {
+    const movement = this.#getMovementToSeek();
 
     let buf = "";
 
     if (movement[0] > 0) buf += CURUP(movement[0]);
 
-    buf += MOVE_CUR_HORIZ(-movement[1]);
+    buf += MOVE_CUR_HORIZ(movement[1]);
 
     return buf;
   }
@@ -144,5 +150,6 @@ export class Prompt {
 
     stdout.write(toWrite + this.#moveCursorToSeek());
     this.#lastDisplayLength = toWrite.split("\n").map((line) => line.length);
+    this.#lastDisplaySeek = [...this.#seek];
   }
 }
