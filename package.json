@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && esbuild src/*.ts --format=esm --outdir=dist",
-    "start": "\"$npm_execpath\" run build && node dist/index.js"
+    "start": "\"$npm_execpath\" run build && node dist/index.js",
+    "test": "\"$npm_execpath\" run build && node dist/index.js test/helloWorld.clisp && node dist/index.js test/helloMany.clisp"
   },
   "author": "Yellowsink",
   "license": "Unlicense",

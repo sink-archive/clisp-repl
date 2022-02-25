@@ -1,0 +1,4 @@
+(conlog "
+||| helloWorld.clisp called |||
+")
+"Hello, World!"

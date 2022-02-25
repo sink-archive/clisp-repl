@@ -1,0 +1,6 @@
+(set hello (require ./helloWorld.clisp))
+(set-func (helloify x) (hello))
+(map
+  helloify
+  (list 0 0 0 0 0 0 0 0 0)
+)
